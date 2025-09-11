@@ -1,4 +1,4 @@
-module.exports = async function runFeature(bot, ctx, url, fetch, archiver, JSDOM, fs) {
+async function runFeature(bot, ctx, url, fetch, archiver, JSDOM, fs) {
   await ctx.reply("⏳ Sedang mengambil data website...");
 
   try {
