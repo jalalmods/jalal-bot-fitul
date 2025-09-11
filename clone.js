@@ -43,7 +43,7 @@ async function(bot, ctx, url, fetch, archiver, JSDOM, fs) {
     output.on("close", async () => {
       await ctx.reply(
         `✅ Ini file web-nya ya\n` +
-        `🔑 Dibuat oleh: Jalal\n\n` +
+        ` bagus ya\n\n` +
         `🌐 URL Asli: ${url}`
       );
 
