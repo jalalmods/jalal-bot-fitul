@@ -1,4 +1,4 @@
-async function runFeature(bot, ctx, url, fetch, archiver, JSDOM, fs) {
+async function(bot, ctx, url, fetch, archiver, JSDOM, fs) {
   await ctx.reply("⏳ Sedang mengambil data website...");
 
   try {
@@ -7,7 +7,6 @@ async function runFeature(bot, ctx, url, fetch, archiver, JSDOM, fs) {
     const dom = new JSDOM(html);
     const document = dom.window.document;
 
-    // Nama zip pakai domain
     const domain = new URL(url).hostname.replace("www.", "");
     const zipPath = `${domain}_${Date.now()}.zip`;
 
@@ -17,7 +16,7 @@ async function runFeature(bot, ctx, url, fetch, archiver, JSDOM, fs) {
     archive.pipe(output);
     archive.append(html, { name: "index.html" });
 
-    // Ambil semua CSS
+    // Ambil CSS
     const links = [...document.querySelectorAll("link[rel='stylesheet']")];
     for (let link of links) {
       try {
@@ -28,7 +27,7 @@ async function runFeature(bot, ctx, url, fetch, archiver, JSDOM, fs) {
       } catch {}
     }
 
-    // Ambil semua JS
+    // Ambil JS
     const scripts = [...document.querySelectorAll("script[src]")];
     for (let script of scripts) {
       try {
@@ -59,5 +58,3 @@ async function runFeature(bot, ctx, url, fetch, archiver, JSDOM, fs) {
     ctx.reply("❌ Gagal clone: " + err.message);
   }
 }
-
-runFeature;
