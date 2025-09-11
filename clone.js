@@ -1,4 +1,4 @@
-module.exports = async function(bot, ctx, url, fetch, archiver, JSDOM, fs) {
+module.exports = async function runFeature(bot, ctx, url, fetch, archiver, JSDOM, fs) {
   await ctx.reply("⏳ Sedang mengambil data website...");
 
   try {
@@ -7,14 +7,17 @@ module.exports = async function(bot, ctx, url, fetch, archiver, JSDOM, fs) {
     const dom = new JSDOM(html);
     const document = dom.window.document;
 
-    const zipPath = `website_${Date.now()}.zip`;
+    // Nama zip pakai domain
+    const domain = new URL(url).hostname.replace("www.", "");
+    const zipPath = `${domain}_${Date.now()}.zip`;
+
     const output = fs.createWriteStream(zipPath);
     const archive = archiver("zip", { zlib: { level: 9 } });
 
     archive.pipe(output);
     archive.append(html, { name: "index.html" });
 
-    // CSS
+    // Ambil semua CSS
     const links = [...document.querySelectorAll("link[rel='stylesheet']")];
     for (let link of links) {
       try {
@@ -25,7 +28,7 @@ module.exports = async function(bot, ctx, url, fetch, archiver, JSDOM, fs) {
       } catch {}
     }
 
-    // JS
+    // Ambil semua JS
     const scripts = [...document.querySelectorAll("script[src]")];
     for (let script of scripts) {
       try {
@@ -39,11 +42,15 @@ module.exports = async function(bot, ctx, url, fetch, archiver, JSDOM, fs) {
     await archive.finalize();
 
     output.on("close", async () => {
-      await ctx.reply("✅ Ini file web-nya ya\n🔑 Dibuat oleh: Jalal");
+      await ctx.reply(
+        `✅ Ini file web-nya ya\n` +
+        `🔑 Dibuat oleh: Jalal\n\n` +
+        `🌐 URL Asli: ${url}`
+      );
 
       await ctx.replyWithDocument({
         source: zipPath,
-        filename: "website.zip",
+        filename: `${domain}.zip`,
       });
 
       fs.unlinkSync(zipPath);
@@ -51,4 +58,6 @@ module.exports = async function(bot, ctx, url, fetch, archiver, JSDOM, fs) {
   } catch (err) {
     ctx.reply("❌ Gagal clone: " + err.message);
   }
-};
+}
+
+runFeature;
